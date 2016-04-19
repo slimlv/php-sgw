@@ -12,12 +12,12 @@
 
 class SGW {
   
-   private $gw = 'https://dev.hansagateway.net';
    private $gw_ok_header = 'X-Gateway-Message';
    private $gw_header_CorrelationID = 'CorrelationID';
    private $gw_header_RequestId = 'RequestId';
    private $gw_header_TrackingID = 'TrackingID';
 
+   public  $gw = 'https://dev.hansagateway.net';
    public  $keyfile = null;
    public  $certfile = null;
    public  $transport_cert = null;
