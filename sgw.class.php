@@ -42,7 +42,7 @@ class SGW {
         $res = openssl_pkey_get_private('file://'.$this->keyfile, $key_pass);
         if (!$res) throw new Exception('passphrase is not valid for ',$this->keyfile);
         $this->key_pass = $key_pass;
-        openssl_pkey_free();
+        openssl_pkey_free($res);
     }
     throw new Exception('passphrase is empty');
   }
