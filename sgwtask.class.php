@@ -15,6 +15,7 @@ class SGWTask {
 
   private $errors = array();
   private $keyfile = null;
+  private $key_pass = '';
   private $certfile = null;
   private $sgw_certfile = null;
 
@@ -33,13 +34,24 @@ class SGWTask {
   public $tmpdir = '/tmp/';
 
   const LIBNAME = 'php-sgw';
-  const LIBVER  = 1.0;
+  const LIBVER  = 1.1;
 
   function  __construct($keyfile = null, $certfile = null, $sgw_certfile = null) {
     if ($keyfile) $this->keyfile = $keyfile;
     if ($certfile) $this->certfile = $certfile;
     if ($sgw_certfile) $this->sgw_certfile = $sgw_certfile;
   }    
+
+  function setKeyPass($key_pass = null) {
+    if ($key_pass) { 
+        if (!$this->keyfile) throw new Exception('keyfile is not set');
+        $res = openssl_pkey_get_private('file://'.$this->keyfile, $key_pass); 
+        if (!$res) throw new Exception('passphrase is not valid for ',$this->keyfile); 
+        $this->key_pass = $key_pass; 
+        openssl_pkey_free();
+    }
+    throw new Exception('passphrase is empty');
+  }
 
   function output($type = 'XML') {
     $type = strtoupper($type);
@@ -76,7 +88,7 @@ class SGWTask {
     $fsize = intval($m[1]);
 
 
-    $private_key = openssl_pkey_get_private('file://'.$this->keyfile);
+    $private_key = openssl_pkey_get_private('file://'.$this->keyfile, $this->key_pass);
     if (!$private_key) throw new Exception('Cannot set private key from '.$this->keyfile);
 
     if (!openssl_private_decrypt(base64_decode($transport_key_enc),$transport_key,$private_key)) throw new Exception('Cannot decode transport key: '.$transport_key_enc );
@@ -220,7 +232,7 @@ class SGWTask {
     if (empty($sign_nodes[0])) throw new Exception('cannot find node "SignedInfo"' );
     $sign = $sign_nodes[0]->C14N();
 
-    $private_key = openssl_pkey_get_private('file://'.$this->keyfile);
+    $private_key = openssl_pkey_get_private('file://'.$this->keyfile,$this->key_pass);
     if (!$private_key) throw new Exception('createBDOC: Cannot set private key from '.$this->keyfile);
 
     if (!openssl_sign($sign, $signature, $private_key, 'RSA-SHA256')) throw new Exception('Failure Signing Data: ' . openssl_error_string() );

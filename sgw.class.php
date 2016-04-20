@@ -16,6 +16,7 @@ class SGW {
    private $gw_header_CorrelationID = 'CorrelationID';
    private $gw_header_RequestId = 'RequestId';
    private $gw_header_TrackingID = 'TrackingID';
+   private $key_pass = '';
 
    public  $gw = 'https://dev.hansagateway.net';
    public  $keyfile = null;
@@ -34,6 +35,17 @@ class SGW {
         $this->keyfile = $keyfile;
         $this->certfile = $certfile;
    }
+
+  function setKeyPass($key_pass = null) {
+    if ($key_pass) {
+        if (!$this->keyfile) throw new Exception('keyfile is not set');
+        $res = openssl_pkey_get_private('file://'.$this->keyfile, $key_pass);
+        if (!$res) throw new Exception('passphrase is not valid for ',$this->keyfile);
+        $this->key_pass = $key_pass;
+        openssl_pkey_free();
+    }
+    throw new Exception('passphrase is empty');
+  }
 
    function send($task) {
         $this->errors = array();
@@ -84,6 +96,7 @@ class SGW {
         curl_setopt($ch, CURLOPT_CERTINFO, 1); # to output SSL certification information to STDERR on secure transfers
         curl_setopt($ch, CURLOPT_SSLCERT, $this->certfile); #  The name of a file containing a PEM formatted certificate.
         curl_setopt($ch, CURLOPT_SSLKEY, $this->keyfile); # The name of a file containing a private SSL key.
+        if ($this->key_pass) curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $this->key_pass);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1); # to track the handle's request string
 
         
