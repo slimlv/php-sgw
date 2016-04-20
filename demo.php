@@ -61,7 +61,7 @@ if (isset($_POST['data'])) {
  #           $receive_task->save('BDOC') or print('error saving BDOC:'.$receive_task->getError());
  #           $receive_task->save('XML') or print('error saving XML:'.$receive_task->getError());
             $processor->purge($receive_task);
-            print 'Output: <br><ore>'.htmlentities($receive_task->output()).'</pre>';
+            print 'Output: <br><pre>'.htmlentities($receive_task->output()).'</pre>';
         }
     }
 
