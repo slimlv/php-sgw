@@ -5,7 +5,9 @@ require_once('sgw.class.php');
 require_once('sgwtask.class.php');
 
 $key_file = 'my.key';
+$key_pass = 'mysecretpassword'; # if any
 $cert_file = 'my.crt';
+
 
 is_readable($key_file) or die('cannot read file "'.$key_file.'"');
 is_readable($cert_file) or die('cannot read file "'.$cert_file.'"');
@@ -13,6 +15,7 @@ is_readable($cert_file) or die('cannot read file "'.$cert_file.'"');
 
 $processor = new SGW($key_file,$cert_file);
 $processor->transport_cert = 'sgwCA.cer';
+$processor->setKeyPass($key_pass);
 
 
  print "<h1>SEND:</h1>";
@@ -28,6 +31,7 @@ $processor->transport_cert = 'sgwCA.cer';
 if (isset($_POST['data'])) {
     $send_task = new SGWTask($key_file,$cert_file,'swedbank.cer');
     $send_task->tmpdir = 'output/';
+    $send_task->setKeyPass($key_pass);
     $send_task->encodeXML(trim($_POST['data'])) || die('cannot load XML:'.$task->getError());
     $status = $processor->send($send_task);
     if ($status === false) die('cannot send task due error:'.$processor->getError());
@@ -39,6 +43,7 @@ if (isset($_POST['data'])) {
  print "<a href='?'>receive</a>";
  $receive_task = new SGWTask($key_file,$cert_file);
  $receive_task->tmpdir = 'output/';
+ $receive_task->setKeyPass($key_pass);
 
  $processor->debug = array();
 
