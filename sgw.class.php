@@ -43,8 +43,9 @@ class SGW {
         if (!$res) throw new Exception('passphrase is not valid for ',$this->keyfile);
         $this->key_pass = $key_pass;
         openssl_pkey_free($res);
+    } else {
+    	throw new Exception('passphrase is empty');
     }
-    throw new Exception('passphrase is empty');
   }
 
    function send($task) {
