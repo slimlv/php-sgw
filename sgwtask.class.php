@@ -58,7 +58,6 @@ class SGWTask {
     $type = strtoupper($type);
 
     if ($this->{'output'.$type}) return $this->{'output'.$type};
-
     throw new Exception(  $type.' is not found to output');
   }
 
@@ -96,17 +95,15 @@ class SGWTask {
 
     openssl_free_key($private_key);
 
-    # decode to bdoc here
     $payload_enc_bin = base64_decode($payload_enc);
     $iv = substr($payload_enc_bin,0,16);
     $payload_enc_bin_body =  substr($payload_enc_bin,16);
-
     $payload_dec = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $transport_key, $payload_enc_bin_body, MCRYPT_MODE_CBC, $iv);
 
     if ($payload_dec === false) throw new Exception('Cannot decrypt payload');
 
     # FIXME: strip padding here
-#    $payload_dec = rtrim($payload_dec , "\0\4");
+    # $payload_dec = rtrim($payload_dec , "\0\4");
 
     $this->outputBDOC = zlib_decode($payload_dec);
 
@@ -164,11 +161,11 @@ class SGWTask {
 
   function createBDOC() {
 
-      if (!$this->inputXML) throw new Exception('createBDOC: inputXML is missing');
+    if (!$this->inputXML) throw new Exception('createBDOC: inputXML is missing');
 
-     $manifest = '<?xml version="1.0" encoding="utf-8"?>
-      <manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"><manifest:file-entry manifest:media-type="application/vnd.etsi.asic-e+zip" manifest:full-path="/" /><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="'.$this->CorrelationID.'.xml" /></manifest:manifest>';
-     $mimetype = 'application/vnd.etsi.asic-e+zip';
+    $manifest = '<?xml version="1.0" encoding="utf-8"?>
+    <manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"><manifest:file-entry manifest:media-type="application/vnd.etsi.asic-e+zip" manifest:full-path="/" /><manifest:file-entry manifest:media-type="text/xml" manifest:full-path="'.$this->CorrelationID.'.xml" /></manifest:manifest>';
+    $mimetype = 'application/vnd.etsi.asic-e+zip';
 
 
     $cert = openssl_x509_read('file://'.$this->certfile);
@@ -255,7 +252,6 @@ class SGWTask {
     $this->inputBDOC = file_get_contents($filename);
 
     unlink($filename);
-
   }
 
   function createCDOC() {
