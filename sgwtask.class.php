@@ -238,7 +238,7 @@ class SGWTask {
 
     $signatures = strtr($signatures,array('##BASE64SIGHERE##' => base64_encode($signature)));
 
-    $filename = 'output/'.$this->CorrelationID.'.zip';
+    $filename = $this->tmpdir.'/'.$this->CorrelationID.'.zip';
 
     $zip = new \ZipArchive();
     $zip->open($filename, ZipArchive::CREATE);
@@ -287,8 +287,6 @@ class SGWTask {
 
     # PKCS7 
     $payload .= str_repeat(chr('16'),16);
-
-    file_put_contents('output/raw',$payload);
 
     $payload = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $transport_key, $payload, MCRYPT_MODE_CBC, $iv);
 
