@@ -32,7 +32,7 @@ if (isset($_POST['data'])) {
     $send_task = new SGWTask($key_file,$cert_file,'swedbank.cer');
     $send_task->tmpdir = 'output/';
     $send_task->setKeyPass($key_pass);
-    $send_task->encodeXML(trim($_POST['data'])) || die('cannot load XML:'.$task->getError());
+    $send_task->encodeXML(trim($_POST['data'])) || die('cannot load XML:'.$send_task->getError());
     $status = $processor->send($send_task);
     if ($status === false) die('cannot send task due error:'.$processor->getError());
     print "<h2>sent: ".$send_task->CorrelationID."</h2>";
