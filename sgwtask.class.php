@@ -243,7 +243,9 @@ class SGWTask {
     $zip = new \ZipArchive();
     $zip->open($filename, ZipArchive::CREATE);
     $zip->addFromString('mimetype', $mimetype);
-    $zip->setCompressionName('mimetype', ZipArchive::CM_STORE);
+    if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+        $zip->setCompressionName('mimetype', ZipArchive::CM_STORE); //PHP 7, PECL zip >= 1.13.0
+    }
     $zip->addFromString($this->CorrelationID.'.xml', $this->inputXML);
     $zip->addFromString('META-INF/manifest.xml', $manifest);
     $zip->addFromString('META-INF/signatures1.xml', $signatures);
