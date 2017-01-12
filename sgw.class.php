@@ -61,7 +61,7 @@ class SGW {
    }
 
    function receive($task) {
-      	$this->errors[] = array();
+      	$this->errors = array();
         list($code, $headers,$body) = $this->callCurl('GET');
         if ( $code == '500' || $code == '400' )  throw new Exception('error '.$code.': '.$headers.$body);
 
@@ -77,7 +77,7 @@ class SGW {
    }
 
     function purge($task) {
-        $this->errors[] = array();
+        $this->errors = array();
    	    if ( empty($task->TrackingID) ) return false;
         $this->callCurl('DELETE', '', [ $this->gw_header_TrackingID.': '.$task->TrackingID ]);
 	    return true;
